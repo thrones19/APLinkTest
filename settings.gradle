@@ -1,0 +1,1 @@
+include ':slidingtest', ':viewpagertest', ':wifitest', ':messengertest', ':zxingtest', ':volleytest', ':tcptest'
