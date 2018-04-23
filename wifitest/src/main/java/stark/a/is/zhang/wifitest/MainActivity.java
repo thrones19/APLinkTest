@@ -315,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(ScanResultViewHolder holder, int position) {
+        public void onBindViewHolder(ScanResultViewHolder holder, final int position) {
             if (mScanResultList != null) {
                 final ScanResult scanResult = mScanResultList.get(position);
                 holder.mWifiName.setText(
@@ -327,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 //                            connectTime = System.currentTimeMillis();
-                        mScanResult = scanResult;
+                        mScanResult = mScanResultList.get(position);
                         connectWifi(mScanResult);
                     }
                 });
