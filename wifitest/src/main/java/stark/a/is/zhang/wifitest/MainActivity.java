@@ -450,7 +450,7 @@ public class MainActivity extends AppCompatActivity {
 
                         changeCountText();
                         connectSuccessTime = System.currentTimeMillis();
-                        successOnceTime = connectSuccessTime - connectTime;
+                        successOnceTime = connectSuccessTime - connectTime - connectCount*5000;
 //                        totalTime = totalTime + successOnceTime;
                         connectTime = System.currentTimeMillis();
                         ConnectBean connectBean = new ConnectBean();
@@ -462,13 +462,13 @@ public class MainActivity extends AppCompatActivity {
 
                         Log.d("ZJTest", "wifi网络连接成功**" );
                         if (connectSuccessCount < 5 && connectCount < 10) {
-                            new Handler().postDelayed(new Runnable() {
+                            new Handler().post(new Runnable() {
                                 @Override
                                 public void run() {
                                     connectWifi(mScanResult);
 
                                 }
-                            },5000);
+                            });
                         } else {
                             for (int i = 0; i < successTimeList.size(); i++){
                                 Log.d("ZJTest", "successTimeList    " + successTimeList.get(i).getSuccessTime() + "   " + "连接次数：" + successTimeList.get(i).getConnectCount());
@@ -481,13 +481,13 @@ public class MainActivity extends AppCompatActivity {
                         changeCountText();
                         Log.d("ZJTest", "连接到其它WIFI ："  + wifiInfo.getSSID() + "  connectFailCount" + connectFailCount);
                         if (connectSuccessCount < 5 && connectCount < 10) {
-                            new Handler().postDelayed(new Runnable() {
+                            new Handler().post(new Runnable() {
                                 @Override
                                 public void run() {
                                     connectWifi(mScanResult);
 
                                 }
-                            },5000);
+                            });
                         }else {
                             for (int i = 0; i < successTimeList.size(); i++){
                                 if (successTimeList.size() > 0)
