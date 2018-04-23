@@ -9,9 +9,11 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
+import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -35,10 +37,12 @@ public class MainActivity extends AppCompatActivity {
     private Handler mMainHandler;
     private boolean mHasPermission;
     private WifiReceiver mWifiReceiver;
-    private TextView tvConnectCount, tvConnectSuccessCount;
-    private int connectCount, connectSuccessCount;
+    private TextView tvConnectCount, tvConnectSuccessCount, tvConnectFailCount;
+    private int connectCount, connectSuccessCount, connectFailCount;
     private ScanResult mScanResult;
-    private  String AP_SSID = "TP-LINK_1504";
+//    private  String AP_SSID = "TP-LINK_1504";
+    private  static final String AP_SSID = "OPPLE_AP_LINK";
+//    private  static final String AP_SSID = "OppleHuawei";
 
 
     @Override
@@ -72,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         mWifiInfoRecyclerView = (RecyclerView) findViewById(R.id.wifi_info_detail);
         tvConnectCount = (TextView) findViewById(R.id.tv_connect_count);
         tvConnectSuccessCount = (TextView) findViewById(R.id.tv_connect_success_count);
+        tvConnectFailCount = (TextView) findViewById(R.id.tv_connect_fail_count);
 
     }
 
@@ -104,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 connectCount = 0;
                 connectSuccessCount = 0;
+                connectFailCount = 0;
                 changeCountText();
                 if (mWifiManager.isWifiEnabled()) {
                     mScanResultList = mWifiManager.getScanResults();
@@ -161,7 +167,8 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "未找到指定的WIFI", Toast.LENGTH_SHORT).show();
             return;
         }
-        int netId = mWifiManager.addNetwork(createWifiConfig(scanResult.SSID, "cheng1234567890", WIFICIPHER_WPA));
+        int netId = mWifiManager.addNetwork(createWifiConfig(scanResult.SSID, "", WIFICIPHER_NOPASS));
+//        int netId = mWifiManager.addNetwork(createWifiConfig(scanResult.SSID, "opwifi.fzj123", WIFICIPHER_WPA));
         boolean enable = mWifiManager.enableNetwork(netId, true);
         Log.d("ZJTest", "enable: " + enable);
         boolean reconnect = mWifiManager.reconnect();
@@ -173,7 +180,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void changeCountText(){
         tvConnectCount.setText("连接次数：" + connectCount);
-        tvConnectSuccessCount.setText("连接成功次数：" + connectSuccessCount);
+        tvConnectSuccessCount.setText("成功：" + connectSuccessCount);
+        tvConnectFailCount.setText("失败：" + connectFailCount);
     }
 
 
@@ -262,13 +270,15 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private boolean checkPermission() {
-        for (String permission : NEEDED_PERMISSIONS) {
-            if (ActivityCompat.checkSelfPermission(this, permission)
-                    != PackageManager.PERMISSION_GRANTED) {
-                return false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            for (String permission : NEEDED_PERMISSIONS) {
+                if (ActivityCompat.checkSelfPermission(this, permission)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
             }
+            return true;
         }
-
         return true;
     }
 
@@ -337,20 +347,31 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             // TODO Auto-generated method stub
 
-            if (intent.getAction().equalsIgnoreCase(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {//wifi连接上与否
-                Log.d("ZJTest", "网络状态变化");
+            String action = intent.getAction();
+//            Log.d("ZJTest", action);
+
+            if (action.equalsIgnoreCase(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {//wifi连接上与否
+
                 NetworkInfo info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+                Log.d("ZJTest", "NetworkInfo.State = " + info.getState());
                 if (info.getState().equals(NetworkInfo.State.DISCONNECTED)) {
                     Log.d("ZJTest", "wifi网络连接断开");
-                } else if (info.getState().equals(NetworkInfo.State.CONNECTED)) {
+                } else if (info.getState().equals(NetworkInfo.State.CONNECTING)) {
+                    Log.d("ZJTest", "wifi网络正在连接中");
+                }
+                else if (info.getState().equals(NetworkInfo.State.CONNECTED)) {
                     WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
-                    Log.d("ZJTest", "wifi网络连接成功***************************");
-                    Toast.makeText(MainActivity.this, "连接到网络" + wifiInfo.getSSID(), Toast.LENGTH_SHORT).show();
                     if (connectCount == 0) return;
                     if (wifiInfo.getSSID().equalsIgnoreCase("\"" + AP_SSID + "\"")) {
                         connectSuccessCount++;
                         changeCountText();
-                        if (connectSuccessCount < 3){
+                        Log.d("ZJTest", "wifi网络连接成功***************************" + "  connectSuccessCount" + connectSuccessCount);
+                        Toast.makeText(MainActivity.this, "连接到网络" + wifiInfo.getSSID(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        connectFailCount++;
+                        changeCountText();
+                        Log.d("ZJTest", "连接到其它WIFI ："  + wifiInfo.getSSID() + "  connectFailCount" + connectFailCount);
+                        if (connectFailCount <= 3) {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -358,13 +379,24 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             },1000);
                         }
-
                     }
 
                 }
-
             }
 
+//            if (action.equalsIgnoreCase(WifiManager.WIFI_STATE_CHANGED_ACTION)){
+////                Log.d("ZJTest", "WIFI_STATE_CHANGED_ACTION");
+//            }
+//
+//            if (action.equalsIgnoreCase(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)){
+////                Log.d("ZJTest", "SUPPLICANT_CONNECTION_CHANGE_ACTION");
+//            }
+//
+//            if (action.equalsIgnoreCase(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION)){
+//                SupplicantState state = intent.getParcelableExtra("newState");
+//                SupplicantState.isValidState(state);
+//                Log.d("ZJTest", "newState = "+SupplicantState.isValidState(state)+"  "+WifiManager.EXTRA_SUPPLICANT_ERROR + intent.getIntExtra("supplicantError",999));
+//            }
 
 //            if (intent.getAction().equalsIgnoreCase(ConnectivityManager.CONNECTIVITY_ACTION)){
 //                ConnectivityManager c = (ConnectivityManager)getSystemService(context.CONNECTIVITY_SERVICE);
@@ -385,9 +417,11 @@ public class MainActivity extends AppCompatActivity {
 
         mWifiReceiver = new WifiReceiver();
         IntentFilter filter = new IntentFilter();
-        filter.addAction("android.net.wifi.STATE_CHANGE");
-        filter.addAction("android.net.wifi.WIFI_STATE_CHANGED");
-        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        filter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
+        filter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
+
         registerReceiver(mWifiReceiver, filter);
     }
 

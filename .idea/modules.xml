@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/APLinkDemo.iml" filepath="$PROJECT_DIR$/APLinkDemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/Demos.iml" filepath="$PROJECT_DIR$/Demos.iml" />
       <module fileurl="file://$PROJECT_DIR$/Demos-master.iml" filepath="$PROJECT_DIR$/Demos-master.iml" />
       <module fileurl="file://$PROJECT_DIR$/messengertest/messengertest.iml" filepath="$PROJECT_DIR$/messengertest/messengertest.iml" />
