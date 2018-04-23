@@ -6,18 +6,12 @@
       <module fileurl="file://$PROJECT_DIR$/Demos.iml" filepath="$PROJECT_DIR$/Demos.iml" />
       <module fileurl="file://$PROJECT_DIR$/Demos-master.iml" filepath="$PROJECT_DIR$/Demos-master.iml" />
       <module fileurl="file://$PROJECT_DIR$/messengertest/messengertest.iml" filepath="$PROJECT_DIR$/messengertest/messengertest.iml" />
-      <module fileurl="file://$PROJECT_DIR$/messengertest/messengertest.iml" filepath="$PROJECT_DIR$/messengertest/messengertest.iml" />
-      <module fileurl="file://$PROJECT_DIR$/slidingtest/slidingtest.iml" filepath="$PROJECT_DIR$/slidingtest/slidingtest.iml" />
       <module fileurl="file://$PROJECT_DIR$/slidingtest/slidingtest.iml" filepath="$PROJECT_DIR$/slidingtest/slidingtest.iml" />
       <module fileurl="file://$PROJECT_DIR$/tcptest/tcptest.iml" filepath="$PROJECT_DIR$/tcptest/tcptest.iml" />
-      <module fileurl="file://$PROJECT_DIR$/tcptest/tcptest.iml" filepath="$PROJECT_DIR$/tcptest/tcptest.iml" />
       <module fileurl="file://$PROJECT_DIR$/viewpagertest/viewpagertest.iml" filepath="$PROJECT_DIR$/viewpagertest/viewpagertest.iml" />
-      <module fileurl="file://$PROJECT_DIR$/viewpagertest/viewpagertest.iml" filepath="$PROJECT_DIR$/viewpagertest/viewpagertest.iml" />
-      <module fileurl="file://$PROJECT_DIR$/volleytest/volleytest.iml" filepath="$PROJECT_DIR$/volleytest/volleytest.iml" />
       <module fileurl="file://$PROJECT_DIR$/volleytest/volleytest.iml" filepath="$PROJECT_DIR$/volleytest/volleytest.iml" />
       <module fileurl="file://$PROJECT_DIR$/wifitest/wifitest.iml" filepath="$PROJECT_DIR$/wifitest/wifitest.iml" />
       <module fileurl="file://$PROJECT_DIR$/wifitest/wifitest.iml" filepath="$PROJECT_DIR$/wifitest/wifitest.iml" />
-      <module fileurl="file://$PROJECT_DIR$/zxingtest/zxingtest.iml" filepath="$PROJECT_DIR$/zxingtest/zxingtest.iml" />
       <module fileurl="file://$PROJECT_DIR$/zxingtest/zxingtest.iml" filepath="$PROJECT_DIR$/zxingtest/zxingtest.iml" />
     </modules>
   </component>

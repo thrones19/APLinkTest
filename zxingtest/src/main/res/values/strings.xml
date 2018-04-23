@@ -1,6 +1,0 @@
-<resources>
-    <string name="app_name">ZXingTest</string>
-
-    <string name="generate">Generate QRCode</string>
-    <string name="scan">Scan QRCode</string>
-</resources>

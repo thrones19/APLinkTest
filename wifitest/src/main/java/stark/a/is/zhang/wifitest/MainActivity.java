@@ -41,8 +41,10 @@ public class MainActivity extends AppCompatActivity {
     private int connectCount, connectSuccessCount, connectFailCount;
     private ScanResult mScanResult;
 //    private  String AP_SSID = "TP-LINK_1504";
-    private  static final String AP_SSID = "OPPLE_AP_LINK";
+//    private  static final String AP_SSID = "OPPLE_AP_LINK";
 //    private  static final String AP_SSID = "OppleHuawei";
+    private  static final String AP_SSID = "OPWIFIAP_00050062_FD32";
+    private long connectTime, connectSuccessTime, totalTime;
 
 
     @Override
@@ -155,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
             mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    connectTime = System.currentTimeMillis();
                     mScanResult = scanResult;
                     connectWifi(scanResult);
                 }
@@ -365,13 +368,15 @@ public class MainActivity extends AppCompatActivity {
                     if (wifiInfo.getSSID().equalsIgnoreCase("\"" + AP_SSID + "\"")) {
                         connectSuccessCount++;
                         changeCountText();
-                        Log.d("ZJTest", "wifi网络连接成功***************************" + "  connectSuccessCount" + connectSuccessCount);
-                        Toast.makeText(MainActivity.this, "连接到网络" + wifiInfo.getSSID(), Toast.LENGTH_SHORT).show();
+                        connectSuccessTime = System.currentTimeMillis();
+                        totalTime = connectSuccessTime - connectTime;
+                        Log.d("ZJTest", "wifi网络连接成功**" + "  connectSuccessCount" + connectSuccessCount + "   totalTime" + totalTime);
+//                        Toast.makeText(MainActivity.this, "连接到网络" + wifiInfo.getSSID(), Toast.LENGTH_SHORT).show();
                     } else {
                         connectFailCount++;
                         changeCountText();
                         Log.d("ZJTest", "连接到其它WIFI ："  + wifiInfo.getSSID() + "  connectFailCount" + connectFailCount);
-                        if (connectFailCount <= 3) {
+                        if (connectCount <= 10) {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
