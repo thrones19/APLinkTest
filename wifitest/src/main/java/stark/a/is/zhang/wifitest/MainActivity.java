@@ -29,6 +29,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -44,9 +46,11 @@ public class MainActivity extends AppCompatActivity {
 //    private  static final String AP_SSID = "OPPLE_AP_LINK";
 //    private  static final String AP_SSID = "OppleHuawei";
     private  static final String AP_SSID = "OPWIFIAP_00050062_FD32";
-    private long connectTime, connectSuccessTime, successOnceTime,totalTime;
+    private long connectTime, connectSuccessTime,totalTime,successOnceTime;
     private boolean connectFlag, checkThreadCanRun;
     private Thread checkThread;
+    private List<String> successTimeList = new ArrayList();
+
 
 
     @Override
@@ -427,20 +431,24 @@ public class MainActivity extends AppCompatActivity {
                         changeCountText();
                         connectSuccessTime = System.currentTimeMillis();
                         successOnceTime = connectSuccessTime - connectTime;
-                        totalTime = totalTime + successOnceTime;
+//                        totalTime = totalTime + successOnceTime;
                         connectTime = System.currentTimeMillis();
-                        Log.d("ZJTest", "wifi网络连接成功**" + "  connectSuccessCount" + connectSuccessCount + "   totalTime" + successOnceTime);
-                        if (connectCount < 10) {
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    connectWifi(mScanResult);
-
-                                }
-                            },5000);
-                        } else {
-                            tvSuccessTime.setText("时间:" + totalTime/connectSuccessCount);
+                        successTimeList.add(String.valueOf(successOnceTime));
+                        for (int i = 0; i < successTimeList.size(); i++){
+                            Log.d("ZJTest", "successTimeList    " + successTimeList.get(i));
                         }
+                        Log.d("ZJTest", "wifi网络连接成功**" + "  connectSuccessCount" + connectSuccessCount + "   successOnceTime" + successOnceTime);
+//                        if (connectCount < 10) {
+//                            new Handler().postDelayed(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    connectWifi(mScanResult);
+//
+//                                }
+//                            },5000);
+//                        } else {
+//                            tvSuccessTime.setText("时间:" + totalTime/connectSuccessCount);
+//                        }
 //                        Toast.makeText(MainActivity.this, "连接到网络" + wifiInfo.getSSID(), Toast.LENGTH_SHORT).show();
                     } else {
                         connectFailCount++;
@@ -455,7 +463,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             },1000);
                         }else {
-                            tvSuccessTime.setText("时间:" + totalTime/connectSuccessCount);
+                            tvSuccessTime.setText("时间:" + successOnceTime);
                         }
                     }
 
