@@ -428,6 +428,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                     if (wifiInfo.getSSID().equalsIgnoreCase("\"" + AP_SSID + "\"")) {
                         connectSuccessCount++;
+                        connectCount = 0;
+                        connectFailCount = 0;
                         changeCountText();
                         connectSuccessTime = System.currentTimeMillis();
                         successOnceTime = connectSuccessTime - connectTime;
@@ -438,17 +440,15 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("ZJTest", "successTimeList    " + successTimeList.get(i));
                         }
                         Log.d("ZJTest", "wifi网络连接成功**" + "  connectSuccessCount" + connectSuccessCount + "   successOnceTime" + successOnceTime);
-//                        if (connectCount < 10) {
-//                            new Handler().postDelayed(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    connectWifi(mScanResult);
-//
-//                                }
-//                            },5000);
-//                        } else {
-//                            tvSuccessTime.setText("时间:" + totalTime/connectSuccessCount);
-//                        }
+                        if (connectSuccessCount < 5) {
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    connectWifi(mScanResult);
+
+                                }
+                            },5000);
+                        }
 //                        Toast.makeText(MainActivity.this, "连接到网络" + wifiInfo.getSSID(), Toast.LENGTH_SHORT).show();
                     } else {
                         connectFailCount++;
