@@ -204,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
                     WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
                     if (!wifiInfo.getSSID().equalsIgnoreCase("\"" + AP_SSID + "\"")){
                         connectWifi(mScanResult);
+                        Log.e("ZJTest","10s无WIFI连接");
                     }
                 }
             }
@@ -216,9 +217,9 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                tvConnectCount.setText("连接次数：" + connectCount);
-                tvConnectSuccessCount.setText("成功：" + connectSuccessCount);
-                tvConnectFailCount.setText("失败：" + connectFailCount);
+                tvConnectCount.setText("连接次数:" + connectCount);
+                tvConnectSuccessCount.setText("成功:" + connectSuccessCount);
+                tvConnectFailCount.setText("失败:" + connectFailCount);
             }
         });
     }
@@ -438,7 +439,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             },5000);
                         } else {
-                            tvSuccessTime.setText("平均时间：" + totalTime/connectSuccessCount);
+                            tvSuccessTime.setText("时间:" + totalTime/connectSuccessCount);
                         }
 //                        Toast.makeText(MainActivity.this, "连接到网络" + wifiInfo.getSSID(), Toast.LENGTH_SHORT).show();
                     } else {
@@ -454,7 +455,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             },1000);
                         }else {
-                            tvSuccessTime.setText("平均时间：" + totalTime/connectSuccessCount);
+                            tvSuccessTime.setText("时间:" + totalTime/connectSuccessCount);
                         }
                     }
 
