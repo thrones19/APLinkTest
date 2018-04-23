@@ -215,6 +215,8 @@ public class MainActivity extends AppCompatActivity {
                     if (connectSuccessCount < 5 && connectCount < 10){
                         WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
                         if (!wifiInfo.getSSID().equalsIgnoreCase("\"" + AP_SSID + "\"")){
+                            connectCount = 0;
+                            connectFailCount = 0;
                             connectWifi(mScanResult);
                             Log.e("ZJTest","10s无WIFI连接");
                         }
@@ -458,7 +460,7 @@ public class MainActivity extends AppCompatActivity {
                         connectCount = 0;
                         connectFailCount = 0;
 
-//                        Log.d("ZJTest", "wifi网络连接成功**" + "  connectSuccessCount" + connectSuccessCount + "   successOnceTime" + successOnceTime);
+                        Log.d("ZJTest", "wifi网络连接成功**" );
                         if (connectSuccessCount < 5 && connectCount < 10) {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
@@ -469,7 +471,7 @@ public class MainActivity extends AppCompatActivity {
                             },5000);
                         } else {
                             for (int i = 0; i < successTimeList.size(); i++){
-                                Log.d("ZJTest", "successTimeList    " + successTimeList.get(i).getSuccessTime() + "\n" + "连接次数：" + successTimeList.get(i).getConnectCount());
+                                Log.d("ZJTest", "successTimeList    " + successTimeList.get(i).getSuccessTime() + "   " + "连接次数：" + successTimeList.get(i).getConnectCount());
                             }
 
                         }
