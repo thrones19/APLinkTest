@@ -455,13 +455,14 @@ public class MainActivity extends AppCompatActivity {
                         changeCountText();
                         Log.d("ZJTest", "连接到其它WIFI ："  + wifiInfo.getSSID() + "  connectFailCount" + connectFailCount);
                         if (connectCount < 10) {
+                            mWifiManager.disconnect();
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     connectWifi(mScanResult);
 
                                 }
-                            },1000);
+                            },5000);
                         }else {
                             tvSuccessTime.setText("时间:" + successOnceTime);
                         }
