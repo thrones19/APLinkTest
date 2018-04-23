@@ -37,14 +37,16 @@ public class MainActivity extends AppCompatActivity {
     private Handler mMainHandler;
     private boolean mHasPermission;
     private WifiReceiver mWifiReceiver;
-    private TextView tvConnectCount, tvConnectSuccessCount, tvConnectFailCount;
+    private TextView tvConnectCount, tvConnectSuccessCount, tvConnectFailCount, tvSuccessTime;
     private int connectCount, connectSuccessCount, connectFailCount;
     private ScanResult mScanResult;
 //    private  String AP_SSID = "TP-LINK_1504";
 //    private  static final String AP_SSID = "OPPLE_AP_LINK";
 //    private  static final String AP_SSID = "OppleHuawei";
     private  static final String AP_SSID = "OPWIFIAP_00050062_FD32";
-    private long connectTime, connectSuccessTime, totalTime;
+    private long connectTime, connectSuccessTime, successOnceTime,totalTime;
+    private boolean connectFlag, checkThreadCanRun;
+    private Thread checkThread;
 
 
     @Override
@@ -66,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
 
         initWifiReceiver();
 
+
+
     }
 
     Button mOpenWifiButton;
@@ -79,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
         tvConnectCount = (TextView) findViewById(R.id.tv_connect_count);
         tvConnectSuccessCount = (TextView) findViewById(R.id.tv_connect_success_count);
         tvConnectFailCount = (TextView) findViewById(R.id.tv_connect_fail_count);
+        tvSuccessTime = (TextView) findViewById(R.id.tv_connect_success_time);
 
     }
 
@@ -148,24 +153,24 @@ public class MainActivity extends AppCompatActivity {
             mWifiLevel = (TextView) itemView.findViewById(R.id.level);
         }
 
-        void bindScanResult(final ScanResult scanResult) {
-            mWifiName.setText(
-                    getString(R.string.scan_wifi_name, "" + scanResult.SSID));
-            mWifiLevel.setText(
-                    getString(R.string.scan_wifi_level, "" + scanResult.level));
-
-            mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    connectTime = System.currentTimeMillis();
-                    mScanResult = scanResult;
-                    connectWifi(scanResult);
-                }
-            });
-        }
+//        void bindScanResult(final ScanResult scanResult) {
+//            mWifiName.setText(
+//                    getString(R.string.scan_wifi_name, "" + scanResult.SSID));
+//            mWifiLevel.setText(
+//                    getString(R.string.scan_wifi_level, "" + scanResult.level));
+//
+//            mView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    connectTime = System.currentTimeMillis();
+//                    mScanResult = scanResult;
+//                    connectWifi(scanResult);
+//                }
+//            });
+//        }
     }
 
-    private void connectWifi(ScanResult scanResult) {
+    private void connectWifi(final ScanResult scanResult) {
         if (scanResult == null) {
             Toast.makeText(this, "未找到指定的WIFI", Toast.LENGTH_SHORT).show();
             return;
@@ -179,12 +184,43 @@ public class MainActivity extends AppCompatActivity {
         //连接wifi次数
         connectCount++;
         changeCountText();
+
+        connectFlag = true;
+        checkThreadCanRun = true;
+        if (checkThread!=null){
+            checkThread.interrupt();
+            checkThread = null;
+        }
+        checkThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                if (checkThreadCanRun && connectCount < 10){
+                    WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
+                    if (!wifiInfo.getSSID().equalsIgnoreCase("\"" + AP_SSID + "\"")){
+                        connectWifi(mScanResult);
+                    }
+                }
+            }
+        });
+
+        checkThread.start();
     }
 
     private void changeCountText(){
-        tvConnectCount.setText("连接次数：" + connectCount);
-        tvConnectSuccessCount.setText("成功：" + connectSuccessCount);
-        tvConnectFailCount.setText("失败：" + connectFailCount);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tvConnectCount.setText("连接次数：" + connectCount);
+                tvConnectSuccessCount.setText("成功：" + connectSuccessCount);
+                tvConnectFailCount.setText("失败：" + connectFailCount);
+            }
+        });
     }
 
 
@@ -253,7 +289,21 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(ScanResultViewHolder holder, int position) {
             if (mScanResultList != null) {
-                holder.bindScanResult(mScanResultList.get(position));
+                final ScanResult scanResult = mScanResultList.get(position);
+                holder.mWifiName.setText(
+                            getString(R.string.scan_wifi_name, "" + scanResult.SSID));
+                holder.mWifiLevel.setText(
+                            getString(R.string.scan_wifi_level, "" + scanResult.level));
+
+                holder.mView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            connectTime = System.currentTimeMillis();
+                            mScanResult = scanResult;
+                            connectWifi(mScanResult);
+                        }
+                    });
+
             }
         }
 
@@ -363,26 +413,48 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("ZJTest", "wifi网络正在连接中");
                 }
                 else if (info.getState().equals(NetworkInfo.State.CONNECTED)) {
+                    if (!connectFlag) return;
+                    connectFlag = false;
                     WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
                     if (connectCount == 0) return;
+                    if (checkThread != null){
+                        checkThreadCanRun = false;
+                        checkThread.interrupt();
+                    }
                     if (wifiInfo.getSSID().equalsIgnoreCase("\"" + AP_SSID + "\"")) {
                         connectSuccessCount++;
                         changeCountText();
                         connectSuccessTime = System.currentTimeMillis();
-                        totalTime = connectSuccessTime - connectTime;
-                        Log.d("ZJTest", "wifi网络连接成功**" + "  connectSuccessCount" + connectSuccessCount + "   totalTime" + totalTime);
+                        successOnceTime = connectSuccessTime - connectTime;
+                        totalTime = totalTime + successOnceTime;
+                        connectTime = System.currentTimeMillis();
+                        Log.d("ZJTest", "wifi网络连接成功**" + "  connectSuccessCount" + connectSuccessCount + "   totalTime" + successOnceTime);
+                        if (connectCount < 10) {
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    connectWifi(mScanResult);
+
+                                }
+                            },5000);
+                        } else {
+                            tvSuccessTime.setText("平均时间：" + totalTime/connectSuccessCount);
+                        }
 //                        Toast.makeText(MainActivity.this, "连接到网络" + wifiInfo.getSSID(), Toast.LENGTH_SHORT).show();
                     } else {
                         connectFailCount++;
                         changeCountText();
                         Log.d("ZJTest", "连接到其它WIFI ："  + wifiInfo.getSSID() + "  connectFailCount" + connectFailCount);
-                        if (connectCount <= 10) {
+                        if (connectCount < 10) {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     connectWifi(mScanResult);
+
                                 }
                             },1000);
+                        }else {
+                            tvSuccessTime.setText("平均时间：" + totalTime/connectSuccessCount);
                         }
                     }
 

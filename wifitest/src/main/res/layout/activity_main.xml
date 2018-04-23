@@ -33,7 +33,16 @@
         android:id="@+id/tv_connect_fail_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:layout_toRightOf="@id/tv_connect_count"
+        android:layout_marginLeft="8dp"
+        android:layout_below="@id/open_wifi"
+        android:textSize="16sp" />
+    <TextView
+        android:id="@+id/tv_connect_success_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/tv_connect_count"
+        android:layout_marginLeft="8dp"
         android:layout_below="@id/open_wifi"
         android:textSize="16sp" />
     <TextView
